@@ -1,21 +1,32 @@
 import { useState } from 'react'
 
+const StatisticsLine = ({title, value}) => {
+  return (<div>{title}: {value}</div>);
+}
+
 const Statistics = ({good, neutral, bad, all, points}) => {
   return (
     <section>
       <h2>Statistics</h2>
       {all === 0 ? <div>No feedback given</div> : (
         <>
-          <div>Good: {good}</div>
-          <div>Neutral: {neutral}</div>
-          <div>Bad: {bad}</div>
-          <div>All: {all}</div>
-          <div>Average {all === 0 ? 'NA' : points / all}</div>
-          <div>Positive {all === 0 ? 'NA' : (good / all) * 100}%</div>
+          <StatisticsLine title="Good" value={good} />
+          <StatisticsLine title="Neutral" value={neutral} />
+          <StatisticsLine title="Bad" value={bad} />
+          <StatisticsLine title="All" value={all} />
+          <StatisticsLine title="Average" value={all === 0 ? 'NA' : points / all} />
+          <StatisticsLine title="Positive" value={all === 0 ? 'NA' : `${(good / all) * 100}%`} />
         </>
       )}
 
     </section>
+  )
+}
+
+const inc = (prev) => prev + 1;
+const Button = ({text, statefn}) => {
+  return (
+    <button onClick={() => statefn(inc)}>{text}</button>
   )
 }
 
@@ -30,10 +41,10 @@ const App = () => {
   return (
     <div>
       <h1>give feedback</h1>
-      <button onClick={() => setGood(prev => prev + 1)}>good</button>
-      <button onClick={() => setNeutral(prev => prev + 1)}>neutral</button>
-      <button onClick={() => setBad(prev => prev + 1)}>bad</button>
-
+      <Button text='good' statefn={setGood} />
+      <Button text='neutral' statefn={setNeutral} />
+      <Button text='bad' statefn={setBad} />
+      
       <Statistics good={good} neutral={neutral} bad={bad} all={all} points={points} />
     </div>
   )
