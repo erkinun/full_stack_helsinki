@@ -1,3 +1,8 @@
-export function Total({exercises1, exercises2, exercises3}) {
-  return (<p>Number of exercises {exercises1 + exercises2 + exercises3}</p>);
+export function Total({parts}) {
+  return (
+    <p>Number of exercises {
+      parts.map(({exercises}) => exercises)
+        .reduce((p, c) => p + c, 0)}
+    </p>
+  );
 }
