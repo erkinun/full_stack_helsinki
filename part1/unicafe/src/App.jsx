@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 const StatisticsLine = ({title, value}) => {
-  return (<div>{title}: {value}</div>);
+  return (<tr><td>{title}</td><td>{value}</td></tr>);
 }
 
 const Statistics = ({good, neutral, bad, all, points}) => {
@@ -9,14 +9,16 @@ const Statistics = ({good, neutral, bad, all, points}) => {
     <section>
       <h2>Statistics</h2>
       {all === 0 ? <div>No feedback given</div> : (
-        <>
-          <StatisticsLine title="Good" value={good} />
-          <StatisticsLine title="Neutral" value={neutral} />
-          <StatisticsLine title="Bad" value={bad} />
-          <StatisticsLine title="All" value={all} />
-          <StatisticsLine title="Average" value={all === 0 ? 'NA' : points / all} />
-          <StatisticsLine title="Positive" value={all === 0 ? 'NA' : `${(good / all) * 100}%`} />
-        </>
+        <table>
+          <tbody>
+            <StatisticsLine title="Good" value={good} />
+            <StatisticsLine title="Neutral" value={neutral} />
+            <StatisticsLine title="Bad" value={bad} />
+            <StatisticsLine title="All" value={all} />
+            <StatisticsLine title="Average" value={all === 0 ? 'NA' : points / all} />
+            <StatisticsLine title="Positive" value={all === 0 ? 'NA' : `${(good / all) * 100}%`} />
+          </tbody>
+        </table>
       )}
 
     </section>
