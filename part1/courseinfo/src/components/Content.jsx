@@ -1,13 +1,13 @@
-export function Content({part1, exercises1, part2, exercises2, part3, exercises3}) {
+export function Content({part1, part2, part3, }) {
     return (
       <>
-        <Part part={part1} exerciseCount={exercises1} />
-        <Part part={part2} exerciseCount={exercises2} />
-        <Part part={part3} exerciseCount={exercises3} />
+        <Part name={part1.name} exerciseCount={part1.exercises} />
+        <Part name={part2.name} exerciseCount={part2.exercises} />
+        <Part name={part3.name} exerciseCount={part3.exercises} />
       </>
     );
 }
 
-function Part({part, exerciseCount}) {
-  return (<p>{part} {exerciseCount}</p>)
+function Part({name, exerciseCount}) {
+  return (<p>{name} {exerciseCount}</p>)
 }
