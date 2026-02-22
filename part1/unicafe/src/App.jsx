@@ -4,13 +4,17 @@ const Statistics = ({good, neutral, bad, all, points}) => {
   return (
     <section>
       <h2>Statistics</h2>
+      {all === 0 ? <div>No feedback given</div> : (
+        <>
+          <div>Good: {good}</div>
+          <div>Neutral: {neutral}</div>
+          <div>Bad: {bad}</div>
+          <div>All: {all}</div>
+          <div>Average {all === 0 ? 'NA' : points / all}</div>
+          <div>Positive {all === 0 ? 'NA' : (good / all) * 100}%</div>
+        </>
+      )}
 
-      <div>Good: {good}</div>
-      <div>Neutral: {neutral}</div>
-      <div>Bad: {bad}</div>
-      <div>All: {all}</div>
-      <div>Average {all === 0 ? 'NA' : points / all}</div>
-      <div>Positive {all === 0 ? 'NA' : (good / all) * 100}%</div>
     </section>
   )
 }
