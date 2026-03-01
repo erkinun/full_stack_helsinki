@@ -21,8 +21,8 @@ const Course = ({course: {name, parts}}) => {
     <div>
       <Header course={name} />
       <Content parts={parts} />
-      {/* <Total total={
-          parts.map(({exercises}) => exercises).reduce((prev, agg) => prev + agg, 0)} /> */}
+      <Total total={
+          parts.map(({exercises}) => exercises).reduce((prev, agg) => prev + agg, 0)} />
     </div>
   )
 }
