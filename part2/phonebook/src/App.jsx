@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import {create, deleteId, getAll} from './services/phones'
+import {create, deleteId, getAll, update} from './services/phones'
 import { PersonForm } from './components/PersonForm'
 import { Filter } from './components/Filter'
 import { Persons } from './components/Persons'
@@ -19,14 +19,18 @@ const App = () => {
 
   const formSubmitFn = (e) => {
     e.preventDefault()
-    if (persons.find(({name}) => name === newName)) {
-      alert(`${newName} is already added to phonebook`);
-      return;
-    }
-
     const newPhoneNumber = {
       name: newName,
       number: phoneNumber
+    }
+    const existing = persons.find(({name}) => name === newName)
+    if (existing) {
+      if (confirm(`${existing?.name} is already added to phonebook, replace the old number with a new one?`)) {
+        update(existing.id, newPhoneNumber)
+          .then(getAll)
+          .then(r => setPersons(r.data))
+      }
+      return;
     }
 
     create(newPhoneNumber)
