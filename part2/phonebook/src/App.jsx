@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import {create, deleteId, getAll} from './services/phones'
 import { PersonForm } from './components/PersonForm'
 import { Filter } from './components/Filter'
 import { Persons } from './components/Persons'
@@ -11,8 +11,7 @@ const App = () => {
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
+    getAll()
       .then(response => {
         setPersons(response.data)
       })
@@ -25,9 +24,26 @@ const App = () => {
       return;
     }
 
-    setPersons((prev) => [...prev, {name: newName, number: phoneNumber}])
+    const newPhoneNumber = {
+      name: newName,
+      number: phoneNumber
+    }
+
+    create(newPhoneNumber)
+      .then(response => {
+        setPersons((prev) => prev.concat(response.data))
+      })
     setPhoneNumber('')
     setNewName('')
+  }
+
+  const handleDelete = (id) => {
+
+    if (window.confirm(`Delete : ${persons.find((p) => p.id === id)?.name}`)) {
+      deleteId(id)
+      .then(getAll)
+      .then((response) => setPersons(response.data))
+    }
   }
 
   return (
@@ -38,7 +54,7 @@ const App = () => {
         newName={newName} setNewName={setNewName} 
         phoneNumber={phoneNumber} setPhoneNumber={setPhoneNumber}/>
       <h2>Numbers</h2>
-      <Persons persons={persons} search={search}/>
+      <Persons persons={persons} search={search} onDelete={handleDelete}/>
     </div>
   )
 }

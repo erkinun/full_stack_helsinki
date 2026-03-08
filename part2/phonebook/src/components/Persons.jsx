@@ -1,4 +1,4 @@
-export const Persons = ({persons, search}) => {
+export const Persons = ({persons, search, onDelete}) => {
   return (
     <div>
       {persons.filter((p) => {
@@ -8,7 +8,7 @@ export const Persons = ({persons, search}) => {
         else {
           return p;
         }
-      }).map((p) => (<div key={p.name}>{p.name} <span>{p.number}</span></div>))}
+      }).map((p) => (<div key={p.name}>{p.name} <span>{p.number}</span><button onClick={() => onDelete(p.id)}>Delete</button></div>))}
     </div>
   )
 }
