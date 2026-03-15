@@ -3,19 +3,37 @@ import {create, deleteId, getAll, update} from './services/phones'
 import { PersonForm } from './components/PersonForm'
 import { Filter } from './components/Filter'
 import { Persons } from './components/Persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
   const [search, setSearch] = useState('')
+  const [notificationMsg, setNotificationMsg] = useState(null);
+  const [isError, setIsError] = useState(false);
 
-  useEffect(() => {
+  const refreshPhoneBook = () => {
     getAll()
       .then(response => {
         setPersons(response.data)
       })
+  }
+
+  useEffect(() => {
+    refreshPhoneBook();
   }, [])
+
+  const clearNotification = () => {
+    setTimeout(() => {
+      setNotificationMsg(null)
+      setIsError(false);
+    }, 2000);
+  }
+
+  useEffect(() => {
+    clearNotification()
+  }, [notificationMsg])
 
   const formSubmitFn = (e) => {
     e.preventDefault()
@@ -29,6 +47,12 @@ const App = () => {
         update(existing.id, newPhoneNumber)
           .then(getAll)
           .then(r => setPersons(r.data))
+          .then(() => setNotificationMsg(`${existing.name}'s number is updated`))
+          .catch(e => {
+            setNotificationMsg(`${existing.name} is deleted from phonebook`)
+            setIsError(true);
+            refreshPhoneBook();
+          })
       }
       return;
     }
@@ -39,6 +63,7 @@ const App = () => {
       })
     setPhoneNumber('')
     setNewName('')
+    setNotificationMsg(`Added ${newName}`)
   }
 
   const handleDelete = (id) => {
@@ -47,12 +72,18 @@ const App = () => {
       deleteId(id)
       .then(getAll)
       .then((response) => setPersons(response.data))
+      .catch(e => {
+        setNotificationMsg(`Person is already deleted from phonebook`)
+        setIsError(true);
+        refreshPhoneBook();
+      })
     }
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMsg} isError={isError} />
       <Filter search={search} setSearch={setSearch} />
       <PersonForm formSubmitFn={formSubmitFn} 
         newName={newName} setNewName={setNewName} 
