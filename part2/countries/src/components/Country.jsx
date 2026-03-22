@@ -1,4 +1,21 @@
-export const Country = ({area, name, capital, languages, flags: {png}}) => {
+import { useEffect } from "react"
+import { getWeatherForCoordinates } from "../services/weather"
+import { useState } from "react"
+
+export const Country = ({area, name, capital, capitalInfo, languages, flags: {png}}) => {
+  const [weather, setWeather] = useState(null);
+  useEffect(() => {
+    getCapitalWeather()
+  }, [capital])
+
+  console.log({capitalInfo})
+
+  async function getCapitalWeather() {
+    const weather = await getWeatherForCoordinates(capitalInfo.latlng);
+
+    setWeather(weather);
+  }
+
   return (
     <div>
       <h1>{name.official}</h1>
@@ -18,7 +35,13 @@ export const Country = ({area, name, capital, languages, flags: {png}}) => {
       )}
 
       <div><img src={png} /></div>
-      
+
+      {weather && (<div>
+        <h2>Weather in {capital}</h2>
+        <h3>Temperature: {weather?.main?.temp} Celcius</h3>
+        <img src={`https://openweathermap.org/payload/api/media/file/${weather?.weather?.[0].icon}.png`} />
+        <h3>Wind: {weather?.wind?.speed} m/s</h3>
+      </div>)}
     </div>
   )
 }

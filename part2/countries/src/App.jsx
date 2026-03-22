@@ -35,8 +35,6 @@ function App() {
   
     }) ?? [];
 
-    console.log({countries, matchingCountries})
-
     if (matchingCountries.length > 10) {
       setMessage('Too many matches, specify a more precise search');
     }
