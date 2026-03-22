@@ -7,6 +7,7 @@ function App() {
   const [search, setSearch] = useState(null);
   const [message, setMessage]= useState(null);
   const [countries, setCountries] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState(null);
 
   useEffect(() => {
     searchCountries(search);
@@ -15,6 +16,7 @@ function App() {
   const searchCountries = async (searchTerm) => {
     setCountries([]);
     setMessage(null);
+    setSelectedCountry(null);
 
     if (!searchTerm){
       return;
@@ -44,7 +46,7 @@ function App() {
     }
   }
 
-  console.log({countries})
+  const countryToPrint = selectedCountry ?? (countries.length === 1 && countries[0])
 
   return (
     <>
@@ -59,13 +61,13 @@ function App() {
 
       {
         countries.length > 1 && (
-          countries.map((c) => (<div>{c?.name?.common}</div>))
+          countries.map((c) => (<div>{c?.name?.common} <button onClick={() => setSelectedCountry(c)}>Show</button></div>))
         )
       }
 
       {
-        countries.length === 1 && (
-          <Country {...countries[0]}/>
+        countryToPrint && (
+          <Country {...countryToPrint}/>
         )
       }
     </>
