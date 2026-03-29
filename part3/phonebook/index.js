@@ -29,8 +29,9 @@ const phonebookData = [
   },
 ];
 
-app.get('/', (request, response) => {
-  response.send('<h1>Hello World!</h1>')
+app.get('/info', (request, response) => {
+  response.send(`Phonebook has info for ${phonebookData.length} people <br/> ${new Date(Date.now())}`
+  )
 })
 
 app.get('/api/persons', (request, response) => {
