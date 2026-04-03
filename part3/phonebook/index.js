@@ -1,7 +1,9 @@
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
-app.use(morgan('tiny'))
+morgan.token('body', function (req, res) { return req.method === 'POST' ? JSON.stringify(req.body) : '' })
+app.use(morgan(':method :url :status :response-time ms :body'))
+
 app.use(express.json())
 
 let phonebookData = [
@@ -66,7 +68,6 @@ const generateId = () => {
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
-  console.log({body: request.body})
   if (!body.name || !body.number) {
     return response.status(400).json({ 
       error: 'name or number missing' 
