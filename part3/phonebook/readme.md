@@ -1,0 +1,1 @@
+The application is currently deployed at https://full-stack-helsinki-phonebook.onrender.com/info.
