@@ -1,6 +1,8 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+const Phonebook = require("./models/phonebook");
 
 const app = express();
 morgan.token("body", function (req, res) {
@@ -47,18 +49,25 @@ app.get("/info", (request, response) => {
 });
 
 app.get("/api/persons", (request, response) => {
-  response.json(phonebookData);
+  Phonebook.find({}).then((people) => {
+    response.json(
+      people.map((person) => ({
+        name: person.name,
+        number: person.phoneNumber ?? person.number,
+      })),
+    );
+  });
 });
 
 app.get("/api/persons/:id", (request, response) => {
   const id = request.params.id;
-  const person = phonebookData.find((person) => person.id === id);
 
-  if (person) {
-    response.json(person);
-  } else {
-    response.status(404).end();
-  }
+  Phonebook.findById(request.params.id).then((person) => {
+    response.json({
+      ...person,
+      number: person.phoneNumber,
+    });
+  });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -80,24 +89,23 @@ app.post("/api/persons", (request, response) => {
     });
   }
 
-  if (phonebookData.find((p) => p.name === body.name)) {
-    return response.status(400).json({
-      error: `${body.name} already in phonebook`,
-    });
-  }
+  // if (phonebookData.find((p) => p.name === body.name)) {
+  //   return response.status(400).json({
+  //     error: `${body.name} already in phonebook`,
+  //   });
+  // }
 
-  const person = {
+  const note = new Phonebook({
     name: body.name,
-    number: body.number,
-    id: generateId(),
-  };
+    phoneNumber: body.number,
+  });
 
-  phonebookData = phonebookData.concat(person);
-
-  response.json(person);
+  note.save().then((savedNote) => {
+    response.json(savedNote);
+  });
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
