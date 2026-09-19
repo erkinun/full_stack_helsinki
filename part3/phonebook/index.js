@@ -14,38 +14,25 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static("dist"));
 
-let phonebookData = [
-  {
-    id: "1",
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: "2",
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: "3",
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: "4",
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-  {
-    id: "5",
-    name: "Barry Poppendieck",
-    number: "39-23-6423122",
-  },
-];
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+
+  next(error);
+};
+
+// this has to be the last loaded middleware, also all the routes should be registered before this!
+app.use(errorHandler);
 
 app.get("/info", (request, response) => {
-  response.send(
-    `Phonebook has info for ${phonebookData.length} people <br/> ${new Date(Date.now())}`,
-  );
+  Phonebook.find({}).then((people) => {
+    response.send(
+      `Phonebook has info for ${people.length} people <br/> ${new Date(Date.now())}`,
+    );
+  });
 });
 
 app.get("/api/persons", (request, response) => {
@@ -54,6 +41,7 @@ app.get("/api/persons", (request, response) => {
       people.map((person) => ({
         name: person.name,
         number: person.phoneNumber ?? person.number,
+        id: person.id,
       })),
     );
   });
@@ -62,19 +50,30 @@ app.get("/api/persons", (request, response) => {
 app.get("/api/persons/:id", (request, response) => {
   const id = request.params.id;
 
-  Phonebook.findById(request.params.id).then((person) => {
-    response.json({
-      ...person,
-      number: person.phoneNumber,
+  Phonebook.findById(request.params.id)
+    .then((person) => {
+      if (person) {
+        response.json({
+          name: person.name,
+          number: person.phoneNumber ?? person.number,
+          id: person.id,
+        });
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      response.status(400).send({ error: "malformatted id" });
     });
-  });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
-  const id = request.params.id;
-  phonebookData = phonebookData.filter((person) => person.id !== id);
-
-  response.status(204).end();
+  Phonebook.findByIdAndDelete(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
 });
 
 app.post("/api/persons", (request, response) => {
@@ -99,6 +98,25 @@ app.post("/api/persons", (request, response) => {
   phonebookEntry.save().then((savedEntry) => {
     response.json(savedEntry);
   });
+});
+
+app.put("/api/persons/:id", (request, response, next) => {
+  const { name, number } = request.body;
+
+  Phonebook.findById(request.params.id)
+    .then((entry) => {
+      if (!entry) {
+        return response.status(404).end();
+      }
+
+      entry.name = name;
+      entry.phoneNumber = number;
+
+      return entry.save().then((updatedEntry) => {
+        response.json(updatedEntry);
+      });
+    })
+    .catch((error) => next(error));
 });
 
 const PORT = process.env.PORT;
