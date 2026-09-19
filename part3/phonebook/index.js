@@ -77,10 +77,6 @@ app.delete("/api/persons/:id", (request, response) => {
   response.status(204).end();
 });
 
-const generateId = () => {
-  return Math.floor(Math.random() * 1_000_000);
-};
-
 app.post("/api/persons", (request, response) => {
   const body = request.body;
   if (!body.name || !body.number) {
@@ -95,13 +91,13 @@ app.post("/api/persons", (request, response) => {
   //   });
   // }
 
-  const note = new Phonebook({
+  const phonebookEntry = new Phonebook({
     name: body.name,
     phoneNumber: body.number,
   });
 
-  note.save().then((savedNote) => {
-    response.json(savedNote);
+  phonebookEntry.save().then((savedEntry) => {
+    response.json(savedEntry);
   });
 });
 
