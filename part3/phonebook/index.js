@@ -15,17 +15,19 @@ app.use(cors());
 app.use(express.static("dist"));
 
 const errorHandler = (error, request, response, next) => {
+  console.log("==================== IN THE ERROR HANDLEeeeeerr ===========");
   console.error(error.message);
+  console.log(error.name);
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    console.log("should be returning 400");
+    return response.status(400).json({ error: error.message });
   }
 
   next(error);
 };
-
-// this has to be the last loaded middleware, also all the routes should be registered before this!
-app.use(errorHandler);
 
 app.get("/info", (request, response) => {
   Phonebook.find({}).then((people) => {
@@ -48,8 +50,6 @@ app.get("/api/persons", (request, response) => {
 });
 
 app.get("/api/persons/:id", (request, response) => {
-  const id = request.params.id;
-
   Phonebook.findById(request.params.id)
     .then((person) => {
       if (person) {
@@ -76,7 +76,7 @@ app.delete("/api/persons/:id", (request, response) => {
     .catch((error) => next(error));
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const body = request.body;
   if (!body.name || !body.number) {
     return response.status(400).json({
@@ -95,9 +95,15 @@ app.post("/api/persons", (request, response) => {
     phoneNumber: body.number,
   });
 
-  phonebookEntry.save().then((savedEntry) => {
-    response.json(savedEntry);
-  });
+  phonebookEntry
+    .save()
+    .then((savedEntry) => {
+      response.json(savedEntry);
+    })
+    .catch((error) => {
+      console.log("==================caught the error", error);
+      next(error);
+    });
 });
 
 app.put("/api/persons/:id", (request, response, next) => {
@@ -118,6 +124,9 @@ app.put("/api/persons/:id", (request, response, next) => {
     })
     .catch((error) => next(error));
 });
+
+// this has to be the last loaded middleware, also all the routes should be registered before this!
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
