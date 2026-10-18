@@ -5,7 +5,7 @@ const cors = require("cors");
 const Phonebook = require("./models/phonebook");
 
 const app = express();
-morgan.token("body", function (req, res) {
+morgan.token("body", function (req) {
   return req.method === "POST" ? JSON.stringify(req.body) : "";
 });
 app.use(morgan(":method :url :status :response-time ms :body"));
@@ -68,9 +68,9 @@ app.get("/api/persons/:id", (request, response) => {
     });
 });
 
-app.delete("/api/persons/:id", (request, response) => {
+app.delete("/api/persons/:id", (request, response, next) => {
   Phonebook.findByIdAndDelete(request.params.id)
-    .then((result) => {
+    .then(() => {
       response.status(204).end();
     })
     .catch((error) => next(error));

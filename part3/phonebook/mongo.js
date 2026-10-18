@@ -37,7 +37,7 @@ if (process.argv.length < 5) {
     phoneNumber,
   });
 
-  newEntry.save().then((result) => {
+  newEntry.save().then(() => {
     console.log(`Added ${name} number ${phoneNumber} to phonebook`);
     mongoose.connection.close();
   });
