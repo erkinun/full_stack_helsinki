@@ -4,6 +4,13 @@ import { defineConfig } from "eslint/config";
 import stylisticJs from "@stylistic/eslint-plugin";
 
 export default defineConfig([
+  stylisticJs.configs.customize({
+    // the following options are the default values
+    indent: 2,
+    quotes: "double",
+    semi: true,
+    // ...
+  }),
   js.configs.recommended,
   {
     files: ["**/*.{js,mjs,cjs}"],
@@ -21,11 +28,11 @@ export default defineConfig([
       "@stylistic/js/indent": ["error", 2],
       "@stylistic/js/linebreak-style": ["error", "unix"],
       "@stylistic/js/quotes": ["error", "double"],
-      eqeqeq: "error",
+      "eqeqeq": "error",
       "no-trailing-spaces": "error",
       "object-curly-spacing": ["error", "always"],
       "arrow-spacing": ["error", { before: true, after: true }],
-      'no-console': 'off',
+      "no-console": "off",
     },
   },
   {

@@ -1,17 +1,13 @@
 const mongoose = require("mongoose");
 
-if (process.argv.length < 3) {
-  console.log("give password as argument");
-  process.exit(1);
-}
+// if (process.argv.length < 3) {
+//   console.log("give password as argument");
+//   process.exit(1);
+// }
 
-const password = process.argv[2];
+// const password = process.argv[2];
 
-const url = `mongodb+srv://erkinun_db_user:${password}@cluster0.fkyks8c.mongodb.net/phonebook?retryWrites=true&w=majority&appName=Cluster0`;
-
-mongoose.set("strictQuery", false);
-
-mongoose.connect(url, { family: 4 });
+// const url = `mongodb+srv://erkinun_db_user:${password}@cluster0.fkyks8c.mongodb.net/phonebook?retryWrites=true&w=majority&appName=Cluster0`;
 
 const phonebookSchema = new mongoose.Schema({
   name: String,
@@ -28,7 +24,8 @@ if (process.argv.length < 5) {
     });
     mongoose.connection.close();
   });
-} else {
+}
+else {
   const name = process.argv[3];
   const phoneNumber = process.argv[4];
 
