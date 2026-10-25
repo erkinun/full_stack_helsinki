@@ -68,7 +68,6 @@ phonebookRouter.post("/", (request, response, next) => {
       response.json(savedEntry);
     })
     .catch((error) => {
-      console.log("==================caught the error", error);
       next(error);
     });
 });
